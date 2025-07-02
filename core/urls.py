@@ -26,3 +26,27 @@ urlpatterns = [
 if settings.DEBUG: # update 03/11/2024: (em homologa com debug true adiciona rota static)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# No arquivo views.py do seu app Django
+import logging
+from django.http import JsonResponse
+
+# Obtenha o logger configurado
+logger = logging.getLogger('requestlogs')
+
+def test_logging_view(request):
+    try:
+        data = {'user': 'leticia', 'email': 'leticia@contato.com'}
+        # Força um erro proposital para testar o log
+        raise ValueError("Erro simulado no envio de email")
+    except Exception as e:
+        # Loga o erro usando o logger configurado
+        logger.error(f"{str(e)} | {str(data)}")
+        return JsonResponse({"status": "error", "message": "Ocorreu um erro."})
+
+from django.urls import path 
+
+urlpatterns = [
+    path('test-logging/', test_logging_view, name='test_logging'),
+]
+
